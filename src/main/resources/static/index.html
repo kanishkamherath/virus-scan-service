@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en-US">
+	<head>
+	   <title>Virus Scan</title>
+	   
+	   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+	   <script>
+		   $(document).ready(function () {
+			    $("#file-upload-form").on("submit", function (e) {
+			        e.preventDefault();
+
+			        $.ajax({
+			            url: "/upload",
+			            type: "POST",
+			            data: new FormData(this),
+			            enctype: 'multipart/form-data',
+			            processData: false,
+			            contentType: false,
+			            cache: false,
+			            success: function (res) {
+			            	showResult(res);
+			            },
+			            error: function (err) {
+			                alert(err);
+			            }
+			        });
+			    });
+			    
+			    function showResult(res){
+			    	$("#result-ok").html("");
+			    	$("#result-error").html("");
+			    	
+			    	if(res.status == "PASSED"){
+			    		$("#result-ok").html("<h2>No threats found.</h2>");
+			    		
+			    	} else if (res.status == "FAILED") {
+			    		$("#result-error").html("<h2>Virus found.</h2><h3>Detected: <b>"+ res.signature + "</b></h3>");
+			    	} else {
+			    		$("#result-error").html("<h3>Something went wrong.</h3><h3>Message: <b>"+ res.result + "</b></h3>");
+			    	}			    	
+			    }
+			});
+        </script>
+	</head>
+	<body>
+		<form id="file-upload-form">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label for="file-upload-input">Select file to upload</label>
+                        </td>
+                        <td>
+                            <input type="file" id="file-upload-input" name="file">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button type="submit">Upload</button> 
+                        </td>
+                    </tr>
+                </tbody>
+		    </table>
+		</form>
+		<label id="result-ok" style="color: blue;"></label>
+		<label id="result-error" style="color: red;"></label>
+	</body>
+</html>
